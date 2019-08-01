@@ -60,8 +60,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-//    api('com.liulishuo.filedownloader:library:1.6.9') {
-//        transitive true
-//    }
-    implementation files('libs/filedownloader_v1.6.9.jar')
+    api('com.liulishuo.filedownloader:library:1.7.6') {
+        transitive true
+    }
+//    implementation files('libs/filedownloader_v1.7.6.jar')
 }

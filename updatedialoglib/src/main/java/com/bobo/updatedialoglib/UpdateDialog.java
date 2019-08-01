@@ -48,6 +48,7 @@ public class UpdateDialog extends Fragment {
     private BaseDownloadTask baseDownloadTask;
     private RelativeLayout progressRl;
     private BarPercentView barPercentView;
+    private boolean debug=false;
 
 
     @Override
@@ -142,6 +143,11 @@ public class UpdateDialog extends Fragment {
             return this;
         }
 
+        public Builder setDebug(boolean debug) {
+            updateDialog.debug = debug;
+            return this;
+        }
+
         public Builder setDownloadUrl(String url) {
             updateDialog.appUrl = url;
             return this;
@@ -206,12 +212,13 @@ public class UpdateDialog extends Fragment {
 
                 @Override
                 protected void pending(BaseDownloadTask task, long soFarBytes, long totalBytes) {
-
+                    if (debug)Log.e("downloadApk","pending-------");
                 }
 
                 @Override
                 protected void progress(BaseDownloadTask task, long soFarBytes, long totalBytes) {
                     float percent = 1f * soFarBytes / totalBytes * 100;
+                    if (debug)Log.e("downloadApk","progress-------"+percent);
                     if (percent >= 3) {
                         barPercentView.setPercentage(percent);
                         progressTv.setText((int) percent + "%");
@@ -220,11 +227,12 @@ public class UpdateDialog extends Fragment {
 
                 @Override
                 protected void paused(BaseDownloadTask task, long soFarBytes, long totalBytes) {
-
+                    if (debug)Log.e("downloadApk","paused-------");
                 }
 
                 @Override
                 protected void completed(BaseDownloadTask task) {
+                    if (debug)Log.e("downloadApk","completed-------");
                     barPercentView.setPercentage(100);
                     progressTv.setText(100 + "%");
                     install(file, mActivity);
@@ -232,12 +240,12 @@ public class UpdateDialog extends Fragment {
 
                 @Override
                 protected void error(BaseDownloadTask task, Throwable e) {
-
+                    if (debug)Log.e("downloadApk","error-------"+e.toString());
                 }
 
                 @Override
                 protected void warn(BaseDownloadTask task) {
-
+                    if (debug)Log.e("downloadApk","warn-------");
                 }
             });
             baseDownloadTask.setAutoRetryTimes(5);
@@ -247,12 +255,13 @@ public class UpdateDialog extends Fragment {
 
                 @Override
                 protected void pending(BaseDownloadTask task, long soFarBytes, long totalBytes) {
-
+                    if (debug)Log.e("downloadApk","pending-------");
                 }
 
                 @Override
                 protected void progress(BaseDownloadTask task, long soFarBytes, long totalBytes) {
                     float percent = 1f * soFarBytes / totalBytes * 100;
+                    if (debug)Log.e("downloadApk","progress-------"+percent);
                     if (percent >= 3) {
                         barPercentView.setPercentage(percent);
                         progressTv.setText((int) percent + "%");
@@ -261,11 +270,12 @@ public class UpdateDialog extends Fragment {
 
                 @Override
                 protected void paused(BaseDownloadTask task, long soFarBytes, long totalBytes) {
-
+                    if (debug)Log.e("downloadApk","paused-------");
                 }
 
                 @Override
                 protected void completed(BaseDownloadTask task) {
+                    if (debug)Log.e("downloadApk","completed-------");
                     barPercentView.setPercentage(100);
                     progressTv.setText(100 + "%");
                     install(file, mActivity);
@@ -273,12 +283,12 @@ public class UpdateDialog extends Fragment {
 
                 @Override
                 protected void error(BaseDownloadTask task, Throwable e) {
-
+                    if (debug)Log.e("downloadApk","error-------"+e.toString());
                 }
 
                 @Override
                 protected void warn(BaseDownloadTask task) {
-
+                    if (debug)Log.e("downloadApk","warn-------");
                 }
             });
             baseDownloadTask.setAutoRetryTimes(5);
