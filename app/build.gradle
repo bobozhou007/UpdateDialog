@@ -1,11 +1,11 @@
-apply plugin: 'com.android.library'
-//apply plugin: 'com.android.application'
-apply plugin: 'maven'
+//apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
+//apply plugin: 'maven'
 
 android {
     compileSdkVersion 28
     defaultConfig {
-//        applicationId "com.bobo.updatedialog"
+        applicationId "com.bobo.updatedialog"
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
@@ -20,11 +20,11 @@ android {
     }
 
     // apk name def
-    android.libraryVariants.all { variant ->
-        variant.outputs.all {
-            outputFileName = "UpdateDialog_${defaultConfig.versionName}_${releaseTime()}.aar"
-        }
-    }
+//    android.libraryVariants.all { variant ->
+//        variant.outputs.all {
+//            outputFileName = "UpdateDialog_${defaultConfig.versionName}_${releaseTime()}.aar"
+//        }
+//    }
 
     compileOptions {
         sourceCompatibility = '1.8'
@@ -32,24 +32,24 @@ android {
     }
 }
 
-uploadArchives {
-    repositories.mavenDeployer {
-        //maven 本地文件地址
-        def mavenLib = file(getProperty('mavenPath'))
-        repository(url: "file://${mavenLib.absolutePath}")
-        pom.project {
-            version android.defaultConfig.versionName
-            groupId GROUDID
-            artifactId ARTIFACTID
-        }
-    }
+//uploadArchives {
+//    repositories.mavenDeployer {
+//        //maven 本地文件地址
+//        def mavenLib = file(getProperty('mavenPath'))
+//        repository(url: "file://${mavenLib.absolutePath}")
+//        pom.project {
+//            version android.defaultConfig.versionName
+//            groupId GROUDID
+//            artifactId ARTIFACTID
+//        }
+//    }
+//
+//}
 
-}
 
-
-static def releaseTime() {
-    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("Asia/Chongqing"))
-}
+//static def releaseTime() {
+//    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("Asia/Chongqing"))
+//}
 
 
 dependencies {
@@ -59,11 +59,12 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation project(path: ':updatedialoglib')
 
     //文件下载
 //    implementation 'com.liulishuo.filedownloader:library:1.6.9'
 
-    api ('com.liulishuo.filedownloader:library:1.6.9'){
-        transitive true
-    }
+//    api ('com.liulishuo.filedownloader:library:1.6.9'){
+//        transitive true
+//    }
 }

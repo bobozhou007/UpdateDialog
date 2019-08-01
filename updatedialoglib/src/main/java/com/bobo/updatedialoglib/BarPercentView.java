@@ -1,4 +1,4 @@
-package com.bobo.updatedialog;
+package com.bobo.updatedialoglib;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -11,6 +11,7 @@ import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
+
 
 /**
  * 条形进度条（可设置 线性渐变-背景色-进度条颜色-进度条高度）

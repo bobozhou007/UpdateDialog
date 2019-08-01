@@ -1,0 +1,68 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+android {
+    compileSdkVersion 28
+
+
+    defaultConfig {
+        minSdkVersion 17
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // apk name def
+    android.libraryVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "UpdateDialog_${defaultConfig.versionName}_${releaseTime()}.aar"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+
+}
+
+static def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("Asia/Chongqing"))
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        //maven 本地文件地址
+        def mavenLib = file(getProperty('mavenPath'))
+        repository(url: "file://${mavenLib.absolutePath}")
+        pom.project {
+            version android.defaultConfig.versionName
+            groupId GROUDID
+            artifactId ARTIFACTID
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    api ('com.liulishuo.filedownloader:library:1.6.9'){
+        transitive true
+    }
+}

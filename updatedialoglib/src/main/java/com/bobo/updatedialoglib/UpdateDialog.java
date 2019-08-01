@@ -1,4 +1,4 @@
-package com.bobo.updatedialog;
+package com.bobo.updatedialoglib;
 
 import android.Manifest;
 import android.content.Context;
@@ -33,7 +33,6 @@ import com.liulishuo.filedownloader.FileDownloader;
 
 import java.io.File;
 
-import static android.content.ContentValues.TAG;
 
 public class UpdateDialog extends Fragment {
 
@@ -321,7 +320,7 @@ public class UpdateDialog extends Fragment {
             //判断是否是AndroidN以及更高的版本
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                Log.d(TAG, "install: " + filePath);
+                Log.d("UpdateDialog", "install: " + filePath);
                 Uri contentUri = FileProvider.getUriForFile(context, mActivity.getPackageName() + ".fileprovider", filePath);
                 intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
             } else {
