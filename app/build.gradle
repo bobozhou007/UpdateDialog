@@ -59,7 +59,10 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation project(path: ':updatedialoglib')
+//    implementation project(path: ':updatedialoglib')
+
+    //更新弹窗
+    implementation 'com.bobo:updatedialog:1.0.0'
 
     //文件下载
 //    implementation 'com.liulishuo.filedownloader:library:1.6.9'
