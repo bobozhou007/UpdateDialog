@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-  <groupId>cn.bobo</groupId>
+  <groupId>com.bobo</groupId>
   <artifactId>updatedialog</artifactId>
   <versioning>
     <release>1.0.0</release>
     <versions>
       <version>1.0.0</version>
     </versions>
-    <lastUpdated>20190801040559</lastUpdated>
+    <lastUpdated>20190801041206</lastUpdated>
   </versioning>
 </metadata>
