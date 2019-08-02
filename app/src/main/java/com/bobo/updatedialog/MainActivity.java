@@ -26,7 +26,10 @@ public class MainActivity extends AppCompatActivity {
         builder.setVersion("v1.8.8")
                 .setContent("1、更新已知bug<br/>2、结算公式调整<br/>3、我的页面布局调整<br/>4、测试更新栏目")
                 .setCancelable(true)
-                .setDownloadUrl("http://staticscs.tyy16888.com/download/tyy_driver_v2.2.2_debug.apk")
+                .setDebug(true)
+//                .setDownloadUrl("http://staticscs.tyy16888.com/download/tyy_driver_v2.2.2_debug.apk")
+                .setDownloadUrl("https://statics.tyy16888.com/download/tyy_driver_07-17_19_49_v2.5.3_release.apk")
+//                .setDownloadUrl("http://ver.rest.touscm.com/v/download/2/")
                 .build().showUpdateDialog(this);
     }
 }

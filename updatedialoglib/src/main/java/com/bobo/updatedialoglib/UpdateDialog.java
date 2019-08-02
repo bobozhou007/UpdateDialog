@@ -32,6 +32,12 @@ import com.liulishuo.filedownloader.FileDownloadLargeFileListener;
 import com.liulishuo.filedownloader.FileDownloader;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
 
 
 public class UpdateDialog extends Fragment {
@@ -41,14 +47,13 @@ public class UpdateDialog extends Fragment {
     private Button confirmBtn;
     private String version, content, appUrl, path;
     private boolean cancelable;
-    private OnConfirmListener listener;
-    //    private LinearLayout parent;
+//    private OnConfirmListener listener;
     private FragmentActivity mActivity;
     private final int PERMISSION_WRITE_EXTERNAL_STORAGE = 0x100;
     private BaseDownloadTask baseDownloadTask;
     private RelativeLayout progressRl;
     private BarPercentView barPercentView;
-    private boolean debug=false;
+    private boolean debug = false;
 
 
     @Override
@@ -75,6 +80,8 @@ public class UpdateDialog extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (baseDownloadTask != null && (!baseDownloadTask.isRunning() || baseDownloadTask.pause()))
+            baseDownloadTask = null;
     }
 
     private void initViews(@NonNull View view) {
@@ -87,13 +94,15 @@ public class UpdateDialog extends Fragment {
         barPercentView = view.findViewById(R.id.fragment_update_barPercentView);
         closeIv.setVisibility(cancelable ? View.VISIBLE : View.GONE);
         confirmBtn.setOnClickListener(v -> {
-            if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
-                return;
-            } else {
-                downloadApk(appUrl);
-            }
-            if (listener != null) listener.onConfirm(v);
+//            if (listener != null) {
+//                listener.onConfirm(v);
+//            } else {
+                if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
+                } else {
+                    downloadApk(appUrl);
+                }
+//            }
         });
         progressRl.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,7 +113,7 @@ public class UpdateDialog extends Fragment {
             }
         });
         closeIv.setOnClickListener(v -> {
-            if (baseDownloadTask == null){
+            if (baseDownloadTask == null) {
                 dismissUpdateDialog();
                 return;
             }
@@ -153,10 +162,10 @@ public class UpdateDialog extends Fragment {
             return this;
         }
 
-        public Builder setOnConfirmListener(OnConfirmListener listener) {
-            updateDialog.listener = listener;
-            return this;
-        }
+//        public Builder setOnConfirmListener(OnConfirmListener listener) {
+//            updateDialog.listener = listener;
+//            return this;
+//        }
 
         public UpdateDialog build() {
             return updateDialog;
@@ -165,9 +174,14 @@ public class UpdateDialog extends Fragment {
 
     }
 
-    public interface OnConfirmListener {
-        void onConfirm(View view);
-    }
+//    public void setPercent(int progressPercent) {
+//        barPercentView.setPercentage(progressPercent);
+//        progressTv.setText(progressPercent + "%");
+//    }
+
+//    public interface OnConfirmListener {
+//        void onConfirm(View view);
+//    }
 
     public void showUpdateDialog(FragmentActivity activity) {
         if (this.isAdded() && this.isVisible()) return;
@@ -180,7 +194,6 @@ public class UpdateDialog extends Fragment {
         } else {
             fragmentTransaction.commit();
         }
-//        setBackgroundAlpha(activity,0.6f);
     }
 
     public void dismissUpdateDialog() {
@@ -191,7 +204,6 @@ public class UpdateDialog extends Fragment {
             fragmentTransaction.commit();
             new Handler().postDelayed(this::destroyUpdateDialog, 500);
         }
-//        setBackgroundAlpha(Objects.requireNonNull(getActivity()),1f);
     }
 
     private void destroyUpdateDialog() {
@@ -202,98 +214,77 @@ public class UpdateDialog extends Fragment {
     }
 
     private void downloadApk(String apkUrl) {
+        if (TextUtils.isEmpty(apkUrl)) throw new NullPointerException("url can not be empty");
         progressRl.setVisibility(View.VISIBLE);
         confirmBtn.setVisibility(View.GONE);
-        path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + apkUrl.substring(apkUrl.lastIndexOf("/") + 1);
-        final File file = new File(path);
+        if (apkUrl.endsWith(".apk")) {
+            downloadApkNormal(apkUrl);
+        } else {
+            downloadApkWithNoFileName(apkUrl);
+        }
+    }
+
+    private void downloadApkNormal(String apkUrl) {
+        String decodeUrl;
+        try {
+            decodeUrl = URLDecoder.decode(apkUrl, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            decodeUrl = apkUrl;
+        }
+        if (debug) Log.e("downloadApk", "originUrl------->" + apkUrl);
+        if (debug) Log.e("downloadApk", "decodeUrl------->" + decodeUrl);
+        path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + decodeUrl.substring(decodeUrl.lastIndexOf("/") + 1);
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         if (!dir.exists() && dir.mkdir()) {
-            baseDownloadTask = FileDownloader.getImpl().create(apkUrl).setPath(path).setCallbackProgressTimes(10).setListener(new FileDownloadLargeFileListener() {
-
-                @Override
-                protected void pending(BaseDownloadTask task, long soFarBytes, long totalBytes) {
-                    if (debug)Log.e("downloadApk","pending-------");
-                }
-
-                @Override
-                protected void progress(BaseDownloadTask task, long soFarBytes, long totalBytes) {
-                    float percent = 1f * soFarBytes / totalBytes * 100;
-                    if (debug)Log.e("downloadApk","progress-------"+percent);
-                    if (percent >= 3) {
-                        barPercentView.setPercentage(percent);
-                        progressTv.setText((int) percent + "%");
-                    }
-                }
-
-                @Override
-                protected void paused(BaseDownloadTask task, long soFarBytes, long totalBytes) {
-                    if (debug)Log.e("downloadApk","paused-------");
-                }
-
-                @Override
-                protected void completed(BaseDownloadTask task) {
-                    if (debug)Log.e("downloadApk","completed-------");
-                    barPercentView.setPercentage(100);
-                    progressTv.setText(100 + "%");
-                    install(file, mActivity);
-                }
-
-                @Override
-                protected void error(BaseDownloadTask task, Throwable e) {
-                    if (debug)Log.e("downloadApk","error-------"+e.toString());
-                }
-
-                @Override
-                protected void warn(BaseDownloadTask task) {
-                    if (debug)Log.e("downloadApk","warn-------");
-                }
-            });
-            baseDownloadTask.setAutoRetryTimes(5);
-            baseDownloadTask.start();
+            startDownloadingApk(decodeUrl);
         } else {
-            baseDownloadTask = FileDownloader.getImpl().create(apkUrl).setPath(path).setCallbackProgressTimes(10).setListener(new FileDownloadLargeFileListener() {
-
-                @Override
-                protected void pending(BaseDownloadTask task, long soFarBytes, long totalBytes) {
-                    if (debug)Log.e("downloadApk","pending-------");
-                }
-
-                @Override
-                protected void progress(BaseDownloadTask task, long soFarBytes, long totalBytes) {
-                    float percent = 1f * soFarBytes / totalBytes * 100;
-                    if (debug)Log.e("downloadApk","progress-------"+percent);
-                    if (percent >= 3) {
-                        barPercentView.setPercentage(percent);
-                        progressTv.setText((int) percent + "%");
-                    }
-                }
-
-                @Override
-                protected void paused(BaseDownloadTask task, long soFarBytes, long totalBytes) {
-                    if (debug)Log.e("downloadApk","paused-------");
-                }
-
-                @Override
-                protected void completed(BaseDownloadTask task) {
-                    if (debug)Log.e("downloadApk","completed-------");
-                    barPercentView.setPercentage(100);
-                    progressTv.setText(100 + "%");
-                    install(file, mActivity);
-                }
-
-                @Override
-                protected void error(BaseDownloadTask task, Throwable e) {
-                    if (debug)Log.e("downloadApk","error-------"+e.toString());
-                }
-
-                @Override
-                protected void warn(BaseDownloadTask task) {
-                    if (debug)Log.e("downloadApk","warn-------");
-                }
-            });
-            baseDownloadTask.setAutoRetryTimes(5);
-            baseDownloadTask.start();
+            startDownloadingApk(decodeUrl);
         }
+    }
+
+    private void startDownloadingApk(String decodeUrl) {
+        baseDownloadTask = FileDownloader.getImpl().create(decodeUrl).setPath(path, new File(path).isDirectory()).setCallbackProgressMinInterval(1000).setListener(new FileDownloadLargeFileListener() {
+
+            @Override
+            protected void pending(BaseDownloadTask task, long soFarBytes, long totalBytes) {
+                if (debug) Log.e("downloadApk", "pending-------");
+            }
+
+            @Override
+            protected void progress(BaseDownloadTask task, long soFarBytes, long totalBytes) {
+                float percent = 1f * soFarBytes / totalBytes * 100;
+                if (debug) Log.e("downloadApk", "progress-------" + percent);
+                if (percent >= 3) {
+                    barPercentView.setPercentage(percent);
+                    progressTv.setText((int) percent + "%");
+                }
+            }
+
+            @Override
+            protected void paused(BaseDownloadTask task, long soFarBytes, long totalBytes) {
+                if (debug) Log.e("downloadApk", "paused-------");
+            }
+
+            @Override
+            protected void completed(BaseDownloadTask task) {
+                if (debug) Log.e("downloadApk", "completed-------");
+                barPercentView.setPercentage(100);
+                progressTv.setText(100 + "%");
+                install(new File(path), mActivity);
+            }
+
+            @Override
+            protected void error(BaseDownloadTask task, Throwable e) {
+                if (debug) Log.e("downloadApk", "error-------" + e.toString());
+            }
+
+            @Override
+            protected void warn(BaseDownloadTask task) {
+                if (debug) Log.e("downloadApk", "warn-------");
+            }
+        });
+        baseDownloadTask.setAutoRetryTimes(5);
+        baseDownloadTask.start();
     }
 
     @Override
@@ -327,7 +318,7 @@ public class UpdateDialog extends Fragment {
     private void install(File filePath, Context context) {
         if (filePath.exists()) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            //判断是否是AndroidN以及更高的版本
+            //判断是否是Android N 以及更高的版本
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 Log.d("UpdateDialog", "install: " + filePath);
@@ -343,17 +334,27 @@ public class UpdateDialog extends Fragment {
         }
     }
 
-    //    private void setBackgroundAlpha(Activity context, float alpha) {
-////        Window window = this.getWindow();
-////        WindowManager.LayoutParams wl = window.getAttributes();
-////        wl.flags = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-////        wl.alpha = alpha;//这句就是设置窗口里崆件的透明度的．０.０全透明．１.０不透明．
-////        window.setAttributes(wl);
-//        Window window = context.getWindow();
-//        WindowManager.LayoutParams layoutParams = window.getAttributes();
-//        layoutParams.alpha = alpha;
-//        window.setAttributes(layoutParams);
-//        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-//    }
-
+    private void downloadApkWithNoFileName(String appUrl) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    URL url = new URL(appUrl);
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.setConnectTimeout(5000);
+                    int responseCode = urlConnection.getResponseCode();
+                    if (responseCode == 200) {
+                        URL url1 = urlConnection.getURL();
+                        downloadApkNormal(url1.toString());
+                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
 }

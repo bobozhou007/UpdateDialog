@@ -13,10 +13,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 
-/**
- * 条形进度条（可设置 线性渐变-背景色-进度条颜色-进度条高度）
- * Created by ZWQ on 2018/6/29.
- */
 class BarPercentView extends View {
 
     public static final float MAX = 100f;
