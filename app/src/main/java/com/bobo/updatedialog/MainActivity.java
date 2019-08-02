@@ -22,14 +22,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showUpdate() {
-        UpdateDialog.Builder builder = new UpdateDialog.Builder();
-        builder.setVersion("v1.8.8")
-                .setContent("1、更新已知bug<br/>2、结算公式调整<br/>3、我的页面布局调整<br/>4、测试更新栏目")
+        new UpdateDialog.Builder()
+                .setVersion("v1.0.1")
+                .setContent("1.下载链接兼容中文<br/>2.下载链接可以是非以.apk结尾的文件的链接<br/>3.兼容7.0系统及以上apk文件的访问权限")
                 .setCancelable(true)
                 .setDebug(true)
-//                .setDownloadUrl("http://staticscs.tyy16888.com/download/tyy_driver_v2.2.2_debug.apk")
                 .setDownloadUrl("https://statics.tyy16888.com/download/tyy_driver_07-17_19_49_v2.5.3_release.apk")
-//                .setDownloadUrl("http://ver.rest.touscm.com/v/download/2/")
                 .build().showUpdateDialog(this);
     }
 }

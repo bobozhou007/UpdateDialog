@@ -61,7 +61,7 @@
             android:text=""
             android:lineSpacingExtra="5dp"
             android:textColor="@color/gray"
-            android:textSize="15sp" />
+            android:textSize="13sp" />
         <Button
             android:id="@+id/fragment_update_confirmBtn"
             android:layout_width="match_parent"

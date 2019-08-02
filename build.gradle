@@ -21,7 +21,6 @@ allprojects {
         maven {
             url "https://raw.githubusercontent.com/bobozhou007/UpdateDialog/master/"
         }
-        
     }
 }
 
