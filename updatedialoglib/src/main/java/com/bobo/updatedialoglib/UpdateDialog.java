@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
 import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,6 +93,7 @@ public class UpdateDialog extends Fragment {
         progressRl = view.findViewById(R.id.fragment_update_progressRl);
         progressTv = view.findViewById(R.id.fragment_update_progressTv);
         barPercentView = view.findViewById(R.id.fragment_update_barPercentView);
+        contentTv.setMovementMethod(ScrollingMovementMethod.getInstance());
         closeIv.setVisibility(cancelable ? View.VISIBLE : View.GONE);
         confirmBtn.setOnClickListener(v -> {
 //            if (listener != null) {
