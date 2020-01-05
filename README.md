@@ -1,4 +1,5 @@
 # UpdateDialog
+## Latest Release Version： [![](https://jitpack.io/v/bobozhou007/UpdateDialog.svg)](https://jitpack.io/#bobozhou007/UpdateDialog)
 ## 项目说明：
   项目依托开发中的实际需求，致力于打造简便易用的更新弹窗，欢迎各位多提宝贵意见！<br/>
   项目截图：
@@ -10,15 +11,15 @@
   ### 配置：
     1.在项目gradle中追加maven仓库
       allprojects {
-          repositories {
-              google()
-              jcenter()
-              maven {
-                  url "https://raw.githubusercontent.com/bobozhou007/UpdateDialog/master/"
-              } 
-          }
-      }
-    2.添加依赖 implementation 'com.bobo:updatedialog:1.0.1'
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+    2.添加依赖 
+      dependencies {
+	        implementation 'com.github.bobozhou007:UpdateDialog:LatestVersion'
+	}
   ### 代码实现：
       new UpdateDialog.Builder()
           .setVersion("v1.8.8")//版本名称
